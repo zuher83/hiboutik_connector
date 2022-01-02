@@ -1,0 +1,243 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* hiboutik_connector
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-01-02 20:41+0000\n"
+"PO-Revision-Date: 2022-01-02 20:41+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_res_company__hiboutik_apikey
+msgid "Api Key"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_product__hb_bck_color
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_template__hb_bck_color
+msgid "Background Color Code"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model,name:hiboutik_connector.model_res_company
+msgid "Companies"
+msgstr ""
+
+#. module: hiboutik_connector
+#: code:addons/hiboutik_connector/models/hiboutik_api.py:0
+#, python-format
+msgid "Connection Hiboutik API failed: %s"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_account_tax__display_name
+#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_api__display_name
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_category__display_name
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_config__display_name
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_order__display_name
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_order_line__display_name
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_payment_method__display_name
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_template__display_name
+#: model:ir.model.fields,field_description:hiboutik_connector.field_res_company__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_product__hb_font_color
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_template__hb_font_color
+msgid "Font Color Code"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model_terms:ir.ui.view,arch_db:hiboutik_connector.view_hiboutik_company_form
+msgid "Force Sync"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model_terms:ir.ui.view,arch_db:hiboutik_connector.product_template_hiboutik_form_view
+#: model_terms:ir.ui.view,arch_db:hiboutik_connector.view_hiboutik_company_form
+#: model_terms:ir.ui.view,arch_db:hiboutik_connector.view_pos_hiboutik_payment_form
+msgid "Hiboutik"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model,name:hiboutik_connector.model_hiboutik_api
+msgid "Hiboutik Api"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_product__hiboutik_product_supplier_reference
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_template__hiboutik_product_supplier_reference
+msgid "Hiboutik Supplier Ref"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_product__hiboutik_sync
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_template__hiboutik_sync
+msgid "Hiboutik Sync"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_res_company__hiboutik_api_url
+msgid "Hiboutik Url"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_category__hiboutik_id
+msgid "Hiboutik category ID"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_order__hiboutik_order_id
+msgid "Hiboutik order Id"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_order_line__hiboutik_order_line_id
+msgid "Hiboutik order line Id"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_category__hiboutik_parent_id
+msgid "Hiboutik parent category ID"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_payment_method__hiboutik_equivalent
+msgid "Hiboutik payment type"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_product__hiboutik_product_category_id
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_template__hiboutik_product_category_id
+msgid "Hiboutik product Category Id"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_product__hiboutik_product_id
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_template__hiboutik_product_id
+msgid "Hiboutik product Id"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_product__hiboutik_active
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_template__hiboutik_active
+msgid "Hiboutik product active"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_config__hiboutik_store_id
+msgid "Hiboutik store Id"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_account_tax__hiboutik_tax_id
+msgid "Hiboutik tax Id"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_account_tax__id
+#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_api__id
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_category__id
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_config__id
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_order__id
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_order_line__id
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_payment_method__id
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_template__id
+#: model:ir.model.fields,field_description:hiboutik_connector.field_res_company__id
+msgid "ID"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,help:hiboutik_connector.field_res_company__hiboutik_apikey
+msgid "Indiquate Api Key"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,help:hiboutik_connector.field_res_company__hiboutik_api_url
+msgid "Indiquate Hiboutik Url"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,help:hiboutik_connector.field_pos_payment_method__hiboutik_equivalent
+msgid "Indiquate payment equivalent in Hiboutik."
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,help:hiboutik_connector.field_res_company__hiboutik_username
+msgid "Indiquate your username."
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_account_tax____last_update
+#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_api____last_update
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_category____last_update
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_config____last_update
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_order____last_update
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_order_line____last_update
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_payment_method____last_update
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_template____last_update
+#: model:ir.model.fields,field_description:hiboutik_connector.field_res_company____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model,name:hiboutik_connector.model_pos_category
+msgid "Point of Sale Category"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model,name:hiboutik_connector.model_pos_config
+msgid "Point of Sale Configuration"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model,name:hiboutik_connector.model_pos_order_line
+msgid "Point of Sale Order Lines"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model,name:hiboutik_connector.model_pos_order
+msgid "Point of Sale Orders"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model,name:hiboutik_connector.model_pos_payment_method
+msgid "Point of Sale Payment Methods"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model,name:hiboutik_connector.model_product_template
+msgid "Product Template"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_category__hiboutik_sync
+msgid "Sync With Hiboutik"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model,name:hiboutik_connector.model_account_tax
+msgid "Tax"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,help:hiboutik_connector.field_product_product__hb_bck_color
+#: model:ir.model.fields,help:hiboutik_connector.field_product_product__hb_font_color
+#: model:ir.model.fields,help:hiboutik_connector.field_product_template__hb_bck_color
+#: model:ir.model.fields,help:hiboutik_connector.field_product_template__hb_font_color
+msgid "Use Hex Code only Ex:-#FFFFFF"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_res_company__hiboutik_username
+msgid "Username Api"
+msgstr ""

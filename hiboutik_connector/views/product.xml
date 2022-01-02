@@ -1,0 +1,27 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record id="product_template_hiboutik_form_view" model="ir.ui.view">
+        <field name="name">product.hiboutik.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="point_of_sale.product_template_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='pos']" position="after">
+                <group string="Hiboutik" name="hiboutik">
+                    <group>
+                        <field name="hiboutik_active" widget="boolean_toggle"/>
+                        <field name="hiboutik_sync" widget="boolean_toggle"/>
+                        <field name="hiboutik_product_supplier_reference"/>
+                        <field name="hb_font_color"/>
+                        <field name="hb_bck_color"/>
+                    </group>
+                    <group>
+                        <field name="hiboutik_product_id" readonly="1"/>
+                        <field name="hiboutik_product_category_id" readonly="1"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+  </data>
+</odoo>
