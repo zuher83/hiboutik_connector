@@ -2,6 +2,10 @@
 
 This addon is under development do not use in production
 
+http://www.hiboutik.fr
+
+https://www.odoo.com
+
 Available features:
 -------------------
  - Sync Categories (Hiboutik --> Odoo 14)
