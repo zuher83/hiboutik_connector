@@ -12,6 +12,8 @@
                                 <field name="hiboutik_username" />
                                 <field name="hiboutik_apikey" />
                                 <field name="hiboutik_api_url" />
+                                <field name="hiboutik_start_sync" />
+                                <field name="hiboutik_latest_sync" readonly="1"/>
                                 <button name="sychronize_datas" type="object" string="Sychronize Datas" icon="fa-television"/>
                             </group>
                         </group>

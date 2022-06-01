@@ -15,7 +15,7 @@ from requests import status_codes
 
 try:
     from urllib import urlencode
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
     # Python 3
     from urllib.parse import urlencode
 
@@ -26,6 +26,7 @@ from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
+
 class HiboutikApi(models.AbstractModel):
     _name = 'hiboutik.api'
     _description = 'Hiboutik Api'
@@ -33,9 +34,12 @@ class HiboutikApi(models.AbstractModel):
     def hb_api(self, url='', method='GET'):
         # self.ensure_one()
 
-        _hb_endpoint = '%s' % self.env['res.company'].browse(self.env.company.id).hiboutik_api_url
-        _username = self.env['res.company'].browse(self.env.company.id).hiboutik_username
-        _key = self.env['res.company'].browse(self.env.company.id).hiboutik_apikey
+        _hb_endpoint = '%s' % self.env['res.company'].browse(
+            self.env.company.id).hiboutik_api_url
+        _username = self.env['res.company'].browse(
+            self.env.company.id).hiboutik_username
+        _key = self.env['res.company'].browse(
+            self.env.company.id).hiboutik_apikey
 
         if _username and _key:
             login = "{}:{}".format(_username, _key)
@@ -47,7 +51,7 @@ class HiboutikApi(models.AbstractModel):
             }
 
         try:
-            url = '%s%s' % (_hb_endpoint,url)
+            url = '%s%s' % (_hb_endpoint, url)
             auth = requests.get(url, headers=headers)
 
             if auth.status_code == 200:
@@ -67,7 +71,8 @@ class HiboutikApi(models.AbstractModel):
 
         for c in hb_category:
 
-            odoo_cat = self.env['pos.category'].search([('hiboutik_id','=', c.get('category_id'))], limit=1)
+            odoo_cat = self.env['pos.category'].search(
+                [('hiboutik_id', '=', c.get('category_id'))], limit=1)
 
             if not odoo_cat:
                 vals = {
@@ -88,12 +93,13 @@ class HiboutikApi(models.AbstractModel):
                 }
                 odoo_cat.write(vals)
 
-        #Check update
+        # Check update
         odoo_cat = self.env['pos.category'].search([])
 
         for oc in odoo_cat:
             if oc.hiboutik_parent_id:
-                odoo_cat = self.env['pos.category'].search([('hiboutik_id','=', oc.hiboutik_parent_id)], limit=1)
+                odoo_cat = self.env['pos.category'].search(
+                    [('hiboutik_id', '=', oc.hiboutik_parent_id)], limit=1)
                 oc.write({'parent_id': odoo_cat.id})
 
     def get_products(self):
@@ -102,21 +108,23 @@ class HiboutikApi(models.AbstractModel):
         hb_products = self.hb_api(url=base_url, method='GET')
 
         for p in hb_products:
-            odoo_product = self.env['product.template'].search([('hiboutik_product_id','=', p.get('product_id'))], limit=1)
+            odoo_product = self.env['product.template'].search(
+                [('hiboutik_product_id', '=', p.get('product_id'))], limit=1)
 
             category = ''
             if p.get('product_category'):
-                category_get = self.env['pos.category'].search([('hiboutik_id','=', p.get('product_category'))], limit=1)
+                category_get = self.env['pos.category'].search(
+                    [('hiboutik_id', '=', p.get('product_category'))], limit=1)
                 if category_get:
                     category = category_get.id
 
             taxes = []
             if p.get('product_vat'):
-                taxes_get = self.env['account.tax'].search([('hiboutik_tax_id','=', p.get('product_vat'))], limit=1)
+                taxes_get = self.env['account.tax'].search(
+                    [('hiboutik_tax_id', '=', p.get('product_vat'))], limit=1)
 
                 if taxes_get:
                     taxes = [(6, 0, taxes_get.ids)]
-
 
             product_type = 'consu'
             if p.get('product_stock_management') == 1:
@@ -167,6 +175,61 @@ class HiboutikApi(models.AbstractModel):
                     vals['pos_categ_id'] = category
 
                 odoo_product.write(vals)
+
+    def customer_check(self, customer_id):
+        result = False
+        src_partner = self.env['res.partner'].search(
+            [('hiboutik_customer_id', '=', customer_id)], limit=1)
+
+        if src_partner:
+            result = src_partner.id
+        else:
+            base_url = '/customer/%s' % customer_id
+            customer = self.hb_api(url=base_url, method='GET')
+            vals = {
+                'lastname': customer.get('last_name'),
+                'firstname': customer.get('first_name'),
+                'phone': customer.get('phone'),
+                'email': customer.get('email'),
+                'vat': customer.get('vat'),
+                'hiboutik_customer_id': customer.get('customers_id')
+            }
+            if customer.get('addresses'):
+                for ad in customer.get('addresses'):
+                    vals['street'] = ad.get('address')
+                    vals['zip'] = ad.get('zip_code')
+                    vals['city'] = ad.get('city')
+
+            cr_partner = self.env['res.partner'].create(vals)
+            result = cr_partner.id
+
+        return result
+
+    def get_closed_sales(self):
+
+        base_url = '/z/customers/1/2021/12/17'
+
+        get_sales_ids = self.hb_api(url=base_url, method='GET')
+
+        hb_sales_ids = []
+        for s in get_sales_ids:
+            hb_sales_ids.append(s.get('sale_id'))
+
+        for sd in hb_sales_ids:
+            self.get_closed_sale_details(sd)
+
+            if s.get('customer_id') != 0:
+                self.customer_check(s.get('customer_id'))
+
+            _logger.warning('Test')
+
+    def get_closed_sale_details(self, sale_id):
+        sale_detail_url = '/sales/%s' % sale_id
+        get_sale_details = self.hb_api(url=sale_detail_url, method='GET')
+        vals = {
+            'hiboutik_order_id': get_sale_details.get('sale_id'),
+            'date_order': get_sale_details.get('completed_at'),
+        }
 
     def sychronize_datas(self):
         self.get_category()

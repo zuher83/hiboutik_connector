@@ -23,7 +23,10 @@ class ResCompany(models.Model):
         string="Hiboutik Url",
         help="Indiquate Hiboutik Url",
     )
+    hiboutik_start_sync = fields.Date(string='Start Sync Since')
+    hiboutik_latest_sync = fields.Datetime(string='Latest Sync')
 
     def sychronize_datas(self):
-        response = self.env['hiboutik.api'].sycronise_datas()
+        response = self.env['hiboutik.api'].sychronize_datas()
+        self.write({'hiboutik_latest_sync': fields.Datetime.now()})
         return response
