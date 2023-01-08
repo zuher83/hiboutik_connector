@@ -4,11 +4,11 @@
 import logging
 import base64
 
-import hashlib
-import urllib
-import keyword
-import time
-import json
+# import hashlib
+# import urllib
+# import keyword
+# import time
+# import json
 
 import requests
 from requests import status_codes
@@ -60,7 +60,8 @@ class HiboutikApi(models.AbstractModel):
 
         except Exception as err:
             _logger.info(
-                "Failed to connect to Hiboutik API. Please check your settings.", exc_info=True)
+                "Failed to connect to Hiboutik API. Please check your settings.",
+                exc_info=True)
             raise UserError(_("Connection Hiboutik API failed: %s") %
                             tools.ustr(err))
 
@@ -133,7 +134,8 @@ class HiboutikApi(models.AbstractModel):
             if not odoo_product:
                 vals = {
                     'hiboutik_product_id': p.get('product_id'),
-                    'hiboutik_product_supplier_reference': p.get('product_supplier_reference'),
+                    'hiboutik_product_supplier_reference': p.get(
+                        'product_supplier_reference'),
                     'hiboutik_sync': True,
                     'hiboutik_product_category_id': p.get('product_category'),
                     'name': p.get('product_model'),
@@ -142,11 +144,10 @@ class HiboutikApi(models.AbstractModel):
                     'barcode': p.get('product_barcode'),
                     'active': p.get('product_display'),
                     'hiboutik_active': p.get('product_display'),
-                    'type': product_type,
-                    'hb_font_color': p.get('product_font_color'),
+                    'type': product_type, 'hb_font_color': p.get(
+                        'product_font_color'),
                     'hb_bck_color': p.get('product_bck_btn_color'),
-                    'available_in_pos': True
-                }
+                    'available_in_pos': True}
                 if taxes:
                     vals['taxes_id'] = taxes
                 if category:
@@ -157,18 +158,18 @@ class HiboutikApi(models.AbstractModel):
             if odoo_product:
                 vals = {
                     'name': p.get('product_model'),
-                    'hiboutik_product_supplier_reference': p.get('product_supplier_reference'),
+                    'hiboutik_product_supplier_reference': p.get(
+                        'product_supplier_reference'),
                     'hiboutik_sync': True,
                     'list_price': p.get('product_price'),
                     'sequence': p.get('product_order'),
                     'barcode': p.get('product_barcode'),
                     'active': p.get('product_display'),
                     'hiboutik_active': p.get('product_display'),
-                    'type': product_type,
-                    'hb_font_color': p.get('product_font_color'),
+                    'type': product_type, 'hb_font_color': p.get(
+                        'product_font_color'),
                     'hb_bck_color': p.get('product_bck_btn_color'),
-                    'available_in_pos': True
-                }
+                    'available_in_pos': True}
                 if taxes:
                     vals['taxes_id'] = taxes
                 if category:
@@ -207,7 +208,7 @@ class HiboutikApi(models.AbstractModel):
 
     def get_closed_sales(self):
 
-        base_url = '/z/customers/1/2021/12/17'
+        base_url = '/z/customers/1/2022/12/31'
 
         get_sales_ids = self.hb_api(url=base_url, method='GET')
 
@@ -228,7 +229,11 @@ class HiboutikApi(models.AbstractModel):
         get_sale_details = self.hb_api(url=sale_detail_url, method='GET')
         vals = {
             'hiboutik_order_id': get_sale_details.get('sale_id'),
-            'date_order': get_sale_details.get('completed_at'),
+            'date_order': get_sale_details.get('created_at'),
+            'pos_reference': get_sale_details.get('unique_sale_id'),
+            'partner_id': self.customer_check(
+                get_sale_details.get('customer_id')),
+            'customer_count': get_sale_details.get('guests_number'),
         }
 
     def sychronize_datas(self):

@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hiboutik_restaurant_hiboutik_restaurant,hiboutik_restaurant.hiboutik_restaurant,model_hiboutik_restaurant_hiboutik_restaurant,base.group_user,1,1,1,1

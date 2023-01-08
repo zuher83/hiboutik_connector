@@ -33,6 +33,7 @@ class PosOrder(models.Model):
     _inherit = 'pos.order'
 
     hiboutik_order_id = fields.Integer(string='Hiboutik order Id')
+    # hiboutik_unique_sale_id = fields.Char(string='Hiboutik Unique Sale Id')
 
 class PosOrderLine(models.Model):
     _inherit = 'pos.order.line'

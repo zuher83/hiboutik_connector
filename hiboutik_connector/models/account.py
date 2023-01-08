@@ -7,6 +7,7 @@ from odoo import fields, models
 
 logger = logging.getLogger(__name__)
 
+
 class AccountTax(models.Model):
     _inherit = 'account.tax'
 
