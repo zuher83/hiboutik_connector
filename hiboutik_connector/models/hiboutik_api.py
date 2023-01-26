@@ -220,9 +220,7 @@ class HiboutikApi(models.AbstractModel):
 
         return result
 
-    def get_closed_sales(self):
-        pos_config = self.env['pos.config'].search(
-            [('hiboutik_store_id', '>', 0), ('hiboutik_sync', '=', True)])
+    def get_closed_sales(self, config):
         start_date = ('%s') % self.env.company.hiboutik_start_sync
         dates = pandas.date_range(
             start='2022-06-04', end='2022-06-06', freq='D', tz='UTC')
@@ -305,13 +303,15 @@ class HiboutikApi(models.AbstractModel):
                     customer).property_account_position_id if customer != 0 else default_fiscal_position
                 tax_ids = fiscal_position.map_tax(product_id.taxes_id)
                 tax_values = (
-                    tax_ids.compute_all(float(sld.get('product_price')), session.currency_id, sld.get('quantity'))
+                    tax_ids.compute_all(
+                        float(sld.get('product_price')),
+                        session.currency_id, sld.get('quantity'))
                     if tax_ids
-                    else {
-                        'total_excluded': float(sld.get('product_price')) * float(sld.get('quantity')),
-                        'total_included': float(sld.get('product_price')) * float(sld.get('quantity')),
-                    }
-                )
+                    else
+                    {'total_excluded': float(sld.get('product_price')) *
+                     float(sld.get('quantity')),
+                     'total_included': float(sld.get('product_price')) *
+                     float(sld.get('quantity')), })
 
                 lines_vals = {
                     'hiboutik_order_line_id': sld.get('line_item_id'),
@@ -361,12 +361,15 @@ class HiboutikApi(models.AbstractModel):
             vals['amount_paid'] = amount_paid
             vals['amount_return'] = 0
 
-            result = self.env['pos.order'].create(vals)
-            result.action_pos_order_paid()
+            # result = self.env['pos.order'].create(vals)
+            # result.action_pos_order_paid()
 
     def sychronize_datas(self):
         self.get_category()
         self.get_products()
 
     def sychronize_sales(self):
-        self.get_closed_sales()
+        pos_config = self.env['pos.config'].search(
+            [('hiboutik_store_id', '>', 0), ('hiboutik_sync', '=', True)])
+        for config in pos_config:
+            self.get_closed_sales(config)
