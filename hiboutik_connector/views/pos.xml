@@ -1,34 +1,47 @@
 <odoo>
-  <data>
-    <record id="view_pos_hiboutik_payment_form" model="ir.ui.view">
-        <field name="name">pos.payment.hiboutik.form</field>
-        <field name="model">pos.payment.method</field>
-        <field name="inherit_id" ref="point_of_sale.pos_payment_method_view_form" />
-        <field name="arch" type="xml">
-            <xpath expr="//form/sheet/group[@name='Payment methods']" position="after">
-                <group string="Hiboutik" name="hiboutik">
-                    <field name="hiboutik_equivalent"/>
-                </group>
-            </xpath>
-        </field>
-    </record>
+    <data>
+        <record id="view_pos_hiboutik_payment_form" model="ir.ui.view">
+            <field name="name">pos.payment.hiboutik.form</field>
+            <field name="model">pos.payment.method</field>
+            <field name="inherit_id" ref="point_of_sale.pos_payment_method_view_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//form/sheet/group[@name='Payment methods']" position="after">
+                    <group string="Hiboutik" name="hiboutik">
+                        <field name="hiboutik_equivalent" />
+                    </group>
+                </xpath>
+            </field>
+        </record>
 
-    <record id="view_hiboutik_pos_config_form" model="ir.ui.view">
-        <field name="name">pos.config.hiboutik.form</field>
-        <field name="model">pos.config</field>
-        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//form/sheet" position="inside">
-                <div class="row mt16 o_settings_container" id="hiboutik_section">
-                    <div id="company" class="col-12 col-lg-6 o_setting_box">
-                        <div class="o_setting_right_pane">
-                            <label for="hiboutik_store_id"/>
-                            <div><field name="hiboutik_store_id"/></div>
+        <record id="view_hiboutik_pos_config_form" model="ir.ui.view">
+            <field name="name">pos.config.hiboutik.form</field>
+            <field name="model">pos.config</field>
+            <field name="inherit_id" ref="point_of_sale.pos_config_view_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//form/sheet" position="inside">
+                    <h2>Hiboutik</h2>
+                    <div class="row mt16 o_settings_container" id="hiboutik_section">
+                        <div id="hiboutik-section" class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <label for="hiboutik_sync" />
+                                <div>
+                                    <field name="hiboutik_sync" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="hiboutik-section2" class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane"
+                                attrs="{'invisible': [('hiboutik_sync', '!=', True)]}">
+
+                                <label for="hiboutik_store_id" />
+                                <div>
+                                    <field name="hiboutik_store_id" />
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </xpath>
-        </field>
-    </record>
-  </data>
+                </xpath>
+            </field>
+        </record>
+    </data>
 </odoo>

@@ -14,7 +14,9 @@
                                 <field name="hiboutik_api_url" />
                                 <field name="hiboutik_start_sync" />
                                 <field name="hiboutik_latest_sync" readonly="1"/>
+                                <field name="hiboutik_latest_sync_sales" readonly="1"/>
                                 <button name="sychronize_datas" type="object" string="Sychronize Datas" icon="fa-television"/>
+                                <button name="sychronize_sales" type="object" string="Sychronize Sales" icon="fa-euro"/>
                             </group>
                         </group>
                     </page>

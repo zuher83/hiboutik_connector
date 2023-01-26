@@ -24,10 +24,13 @@ class PosPaymentMode(models.Model):
         help="Indiquate payment equivalent in Hiboutik.",
     )
 
+
 class PosConfig(models.Model):
     _inherit = 'pos.config'
 
+    hiboutik_sync = fields.Boolean(string='Hiboutik_sync')
     hiboutik_store_id = fields.Integer(string='Hiboutik store Id')
+
 
 class PosOrder(models.Model):
     _inherit = 'pos.order'
@@ -35,7 +38,15 @@ class PosOrder(models.Model):
     hiboutik_order_id = fields.Integer(string='Hiboutik order Id')
     # hiboutik_unique_sale_id = fields.Char(string='Hiboutik Unique Sale Id')
 
+
 class PosOrderLine(models.Model):
     _inherit = 'pos.order.line'
 
     hiboutik_order_line_id = fields.Integer(string='Hiboutik order line Id')
+
+
+class PosPayment(models.Model):
+    _inherit = 'pos.payment'
+
+    hiboutik_payment_detail_id = fields.Integer(
+        string='Hiboutik payment detail Id')
