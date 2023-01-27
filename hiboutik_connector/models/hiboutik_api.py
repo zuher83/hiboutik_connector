@@ -120,7 +120,10 @@ class HiboutikApi(models.AbstractModel):
 
         for p in hb_products:
             odoo_product = self.env['product.template'].search(
-                [('hiboutik_product_id', '=', p.get('product_id'))], limit=1)
+                [('hiboutik_product_id', '=', p.get('product_id')),
+                 '|', ('active', '=', True),
+                 ('active', '=', False)],
+                limit=1)
 
             category = ''
             if p.get('product_category'):
@@ -141,6 +144,10 @@ class HiboutikApi(models.AbstractModel):
             if p.get('product_stock_management') == 1:
                 product_type = 'product'
 
+            product_active = True
+            if p.get('product_arch') == 1:
+                product_active = False
+
             if not odoo_product:
                 vals = {
                     'hiboutik_product_id': p.get('product_id'),
@@ -152,12 +159,12 @@ class HiboutikApi(models.AbstractModel):
                     'list_price': p.get('product_price'),
                     'sequence': p.get('product_order'),
                     'barcode': p.get('product_barcode'),
-                    'active': p.get('product_display'),
-                    'hiboutik_active': p.get('product_display'),
+                    'active': product_active,
+                    'hiboutik_active': product_active,
                     'type': product_type, 'hb_font_color': p.get(
                         'product_font_color'),
                     'hb_bck_color': p.get('product_bck_btn_color'),
-                    'available_in_pos': True}
+                    'available_in_pos': p.get('product_display')}
                 if taxes:
                     vals['taxes_id'] = taxes
                 if category:
@@ -174,12 +181,12 @@ class HiboutikApi(models.AbstractModel):
                     'list_price': p.get('product_price'),
                     'sequence': p.get('product_order'),
                     'barcode': p.get('product_barcode'),
-                    'active': p.get('product_display'),
-                    'hiboutik_active': p.get('product_display'),
+                    'active':  product_active,
+                    'hiboutik_active': product_active,
                     'type': product_type, 'hb_font_color': p.get(
                         'product_font_color'),
                     'hb_bck_color': p.get('product_bck_btn_color'),
-                    'available_in_pos': True}
+                    'available_in_pos': p.get('product_display')}
                 if taxes:
                     vals['taxes_id'] = taxes
                 if category:
@@ -223,7 +230,7 @@ class HiboutikApi(models.AbstractModel):
     def get_closed_sales(self, config):
         start_date = ('%s') % self.env.company.hiboutik_start_sync
         dates = pandas.date_range(
-            start='2022-06-04', end='2022-06-06', freq='D', tz='UTC')
+            start='2022-07-03', end='2022-07-05', freq='D', tz='Europe/Paris')
 
         for d in dates:
             base_url = ('/closed_sales/1/%s') % d.strftime("%Y/%m/%d")
@@ -261,6 +268,12 @@ class HiboutikApi(models.AbstractModel):
                             session=session, customer=customer)
 
                 session.sudo().action_pos_session_validate()
+                all_related_moves = session._get_related_account_moves()
+                _logger.warning('%s' % all_related_moves)
+                for mv in all_related_moves:
+                    mv.button_draft()
+                    mv.sudo().write({'date': d})
+                    mv.action_post()
 
     def get_closed_sale_details(self, sale_id, session, customer):
         sale_detail_url = '/sales/%s' % sale_id
@@ -287,13 +300,22 @@ class HiboutikApi(models.AbstractModel):
                 'session_id': session.id
             }
 
+            if sale_details.get('ressource_id') != 0:
+                table_id = self.env['restaurant.table'].search(
+                    [('hiboutik_id', '=', sale_details.get('ressource_id')),
+                     '|', ('active', '=', True),
+                     ('active', '=', False)], limit=1)
+                vals['table_id'] = table_id.id
+
             if customer != 0:
                 vals['partner_id'] = customer
 
             sale_lines = []
             for sld in sale_details.get('line_items'):
                 product_id = self.env['product.template'].search(
-                    [('hiboutik_product_id', '=', sld.get('product_id'))], limit=1)
+                    [('hiboutik_product_id', '=', sld.get('product_id')),
+                     '|', ('active', '=', True),
+                     ('active', '=', False)], limit=1)
                 default_fiscal_position = self.env['pos.config'].browse(
                     1).default_fiscal_position_id
                 # default_fiscal_position = self.config.default_fiscal_position_id
@@ -361,8 +383,8 @@ class HiboutikApi(models.AbstractModel):
             vals['amount_paid'] = amount_paid
             vals['amount_return'] = 0
 
-            # result = self.env['pos.order'].create(vals)
-            # result.action_pos_order_paid()
+            result = self.env['pos.order'].create(vals)
+            result.action_pos_order_paid()
 
     def sychronize_datas(self):
         self.get_category()

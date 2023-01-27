@@ -1,0 +1,12 @@
+<odoo>
+    <record id="view_restaurant_floor_form" model="ir.ui.view">
+        <field name="name">Restaurant Floors</field>
+        <field name="model">restaurant.floor</field>
+        <field name="inherit_id" ref="pos_restaurant.view_restaurant_floor_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='background_color']" position="after">
+                <field name="hiboutik_id" />
+            </xpath>
+        </field>
+    </record>
+</odoo>
