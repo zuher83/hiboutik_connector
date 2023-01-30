@@ -1,4 +1,4 @@
-# Hiboutik / Odoo 15 POS Connector
+# Hiboutik / Odoo 16 POS Connector
 
 This addon is under development do not use in production
 
@@ -8,14 +8,18 @@ https://www.odoo.com
 
 Available features:
 -------------------
- - Sync Categories (Hiboutik --> Odoo 15)
- - Sync Products (Hiboutik --> Odoo 15)
+ - Sync Products Categories (Hiboutik --> Odoo 16)
+ - Sync POS Products Categories (Hiboutik --> Odoo 16)
+ - Sync Products (Hiboutik --> Odoo 16)
+ - Sync Sales (Hiboutik --> Odoo 16)
+ - Sync Customers (Hiboutik --> Odoo 16)
+ - Sync Floor (Hiboutik --> Odoo 16)
+ - Sync Ressources "Tables" (Hiboutik --> Odoo 16)
 
 Roadmap under development
 -------------------------
- - Sync Sales (Hiboutik --> Odoo 15)
- - Sync Categories (Hiboutik <--> Odoo 15)
- - Sync Products (Hiboutik <--> Odoo 15)
+ - Sync Categories (Hiboutik <--> Odoo 16)
+ - Sync Products (Hiboutik <--> Odoo 16)
 
 
 # IMPORTANT
