@@ -12,6 +12,7 @@ Available features:
  - Sync POS Products Categories (Hiboutik --> Odoo 16)
  - Sync Products (Hiboutik --> Odoo 16)
  - Sync Sales (Hiboutik --> Odoo 16)
+ - Sync Closed Sales Payments (Hiboutik --> Odoo 16)
  - Sync Customers (Hiboutik --> Odoo 16)
  - Sync Floor (Hiboutik --> Odoo 16)
  - Sync Ressources "Tables" (Hiboutik --> Odoo 16)
@@ -27,6 +28,7 @@ Roadmap under development
 After installation, you must indicate the tax ID in Odoo that correspond to those of HIBOUTIK before first sync
  - In Hiboutik go to Settings > Taxes and note taxes IDS
  - In Odoo go to Accounting > Settings > Taxes and write in each tax the correspondence of the Hiboutik Taxe ID in the "Hiboutik tax Id" field
+ - In Odoo POS Payments indiquate Hiboutik payment code. Write Hiboutik Payment Type field "eg: In Hiboutik Credit Card is CB, write in Odoo Payment Methode CB"
 
 In POS Config (Odoo field "Hiboutik Store ID") indiquate Hiboutik store ID
 
