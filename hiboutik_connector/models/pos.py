@@ -50,3 +50,10 @@ class PosPayment(models.Model):
 
     hiboutik_payment_detail_id = fields.Integer(
         string='Hiboutik payment detail Id')
+
+
+class PosSession(models.Model):
+    _inherit = 'pos.session'
+
+    def _post_statement_difference(self, amount):
+        return {}

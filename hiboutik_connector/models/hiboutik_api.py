@@ -31,7 +31,7 @@ class HiboutikApi(models.AbstractModel):
     _name = 'hiboutik.api'
     _description = 'Hiboutik Api'
 
-    def hb_api(self, url='', method='GET'):
+    def hb_api(self, url='', method='GET', data=False):
         _hb_endpoint = '%s' % self.env['res.company'].browse(
             self.env.company.id).hiboutik_api_url
         _username = self.env['res.company'].browse(
@@ -50,14 +50,19 @@ class HiboutikApi(models.AbstractModel):
 
         try:
             url = '%s%s' % (_hb_endpoint, url)
-            auth = requests.get(url, headers=headers)
+            if method == 'PUT':
+                auth = requests.put(url, headers=headers, data=data)
+                _logger.warning('Auth ok %s', auth)
+            else:
+                auth = requests.get(url, headers=headers)
 
             if auth.status_code == 200:
                 response = auth.json()
+                _logger.warning('response ok %s', response)
                 return response
 
         except Exception as err:
-            _logger.info(
+            _logger.warning(
                 "Failed to connect to Hiboutik API. Please check your settings.",
                 exc_info=True)
             raise UserError(_("Connection Hiboutik API failed: %s") %
@@ -69,37 +74,57 @@ class HiboutikApi(models.AbstractModel):
         hb_category = self.hb_api(url=base_url, method='GET')
 
         for c in hb_category:
-
-            odoo_cat = self.env['pos.category'].search(
+            # Check POS product category
+            odoo_pos_cat = self.env['pos.category'].search(
                 [('hiboutik_id', '=', c.get('category_id'))], limit=1)
 
-            if not odoo_cat:
-                vals = {
-                    'hiboutik_id': c.get('category_id'),
-                    'name': c.get('category_name'),
-                    'sequence': c.get('category_position'),
-                    'hiboutik_parent_id': c.get('category_id_parent'),
-                    'hiboutik_sync': True
-                }
+            vals = {
+                'name': c.get('category_name'),
+                'hiboutik_parent_id': c.get('category_id_parent'),
+                'hiboutik_sync': True
+            }
+
+            if odoo_pos_cat:
+                vals['sequence'] = c.get('category_position')
+                odoo_pos_cat.write(vals)
+
+            if not odoo_pos_cat:
+                vals['hiboutik_id'] = c.get('category_id')
+                vals['sequence'] = c.get('category_position')
                 self.env['pos.category'].create(vals)
 
-            if odoo_cat:
-                vals = {
-                    'name': c.get('category_name'),
-                    'sequence': c.get('category_position'),
-                    'hiboutik_parent_id': c.get('category_id_parent'),
-                    'hiboutik_sync': True
-                }
-                odoo_cat.write(vals)
+            # Check product category
+            vals_product_cat = {
+                'name': c.get('category_name'),
+                'hiboutik_parent_id': c.get('category_id_parent'),
+                'hiboutik_sync': True
+            }
+            product_cat = self.env['product.category'].search(
+                [('hiboutik_id', '=', c.get('category_id'))], limit=1)
 
-        # Check if need update
-        odoo_cat = self.env['pos.category'].search([])
+            if product_cat:
+                product_cat.write(vals_product_cat)
 
-        for oc in odoo_cat:
+            if not product_cat:
+                vals_product_cat['hiboutik_id'] = c.get('category_id')
+                self.env['product.category'].create(vals_product_cat)
+
+        # Check if categories need update
+        odoo_pos_cat = self.env['pos.category'].search([])
+
+        for oc in odoo_pos_cat:
             if oc.hiboutik_parent_id:
-                odoo_cat = self.env['pos.category'].search(
+                odoo_pos_cat = self.env['pos.category'].search(
                     [('hiboutik_id', '=', oc.hiboutik_parent_id)], limit=1)
-                oc.write({'parent_id': odoo_cat.id})
+                oc.write({'parent_id': odoo_pos_cat.id})
+
+        all_products_cat = self.env['product.category'].search([])
+
+        for pc in all_products_cat:
+            if pc.hiboutik_parent_id:
+                all_products_cat = self.env['product.category'].search(
+                    [('hiboutik_id', '=', pc.hiboutik_parent_id)], limit=1)
+                pc.write({'parent_id': all_products_cat.id})
 
     def get_products(self):
         pagination = 1
@@ -125,12 +150,18 @@ class HiboutikApi(models.AbstractModel):
                  ('active', '=', False)],
                 limit=1)
 
-            category = ''
+            pos_category = ''
+            product_category = ''
             if p.get('product_category'):
-                category_get = self.env['pos.category'].search(
+                pos_category_get = self.env['pos.category'].search(
+                    [('hiboutik_id', '=', p.get('product_category'))], limit=1)
+                if pos_category_get:
+                    pos_category = pos_category_get.id
+
+                category_get = self.env['product.category'].search(
                     [('hiboutik_id', '=', p.get('product_category'))], limit=1)
                 if category_get:
-                    category = category_get.id
+                    product_category = category_get.id
 
             taxes = []
             if p.get('product_vat'):
@@ -167,8 +198,10 @@ class HiboutikApi(models.AbstractModel):
                     'available_in_pos': p.get('product_display')}
                 if taxes:
                     vals['taxes_id'] = taxes
-                if category:
-                    vals['pos_categ_id'] = category
+                if pos_category:
+                    vals['pos_categ_id'] = pos_category
+                if pos_category:
+                    vals['categ_id'] = product_category
 
                 self.env['product.template'].create(vals)
 
@@ -181,7 +214,7 @@ class HiboutikApi(models.AbstractModel):
                     'list_price': p.get('product_price'),
                     'sequence': p.get('product_order'),
                     'barcode': p.get('product_barcode'),
-                    'active':  product_active,
+                    'active': product_active,
                     'hiboutik_active': product_active,
                     'type': product_type, 'hb_font_color': p.get(
                         'product_font_color'),
@@ -189,8 +222,10 @@ class HiboutikApi(models.AbstractModel):
                     'available_in_pos': p.get('product_display')}
                 if taxes:
                     vals['taxes_id'] = taxes
-                if category:
-                    vals['pos_categ_id'] = category
+                if pos_category:
+                    vals['pos_categ_id'] = pos_category
+                if pos_category:
+                    vals['categ_id'] = product_category
 
                 odoo_product.write(vals)
 
@@ -230,7 +265,7 @@ class HiboutikApi(models.AbstractModel):
     def get_closed_sales(self, config):
         start_date = ('%s') % self.env.company.hiboutik_start_sync
         dates = pandas.date_range(
-            start='2022-07-03', end='2022-07-05', freq='D', tz='Europe/Paris')
+            start='2022-07-24', end='2022-07-26', freq='D', tz='Europe/Paris')
 
         for d in dates:
             base_url = ('/closed_sales/1/%s') % d.strftime("%Y/%m/%d")
@@ -246,11 +281,15 @@ class HiboutikApi(models.AbstractModel):
                 session_vals = {
                     'start_at': start_day,
                     'stop_at': end_day,
-                    'state': 'opened',
-                    'config_id': 1
+                    # 'state': 'opened',
+                    # 'config_id': config.id
                 }
 
-                session = self.env['pos.session'].sudo().create(session_vals)
+                # session = self.env['pos.session'].sudo().create(session_vals)
+                config.open_ui()
+                session = config.current_session_id
+                session.write(session_vals)
+                session.set_cashbox_pos(cashbox_value=0, notes=None)
 
                 for s in get_sales_ids:
                     sale_exist = self.env['pos.order'].search(
@@ -266,10 +305,12 @@ class HiboutikApi(models.AbstractModel):
                         self.get_closed_sale_details(
                             sale_id=s.get('sale_id'),
                             session=session, customer=customer)
-
+                _logger.warning('%s' % session._fields)
+                # session.write({'cash_register_difference': 0})
                 session.sudo().action_pos_session_validate()
+                # session.action_pos_session_closing_control(balancing_account=False, amount_to_balance=session.cash_register_balance_end, bank_payment_method_diffs=None)
+
                 all_related_moves = session._get_related_account_moves()
-                _logger.warning('%s' % all_related_moves)
                 for mv in all_related_moves:
                     mv.button_draft()
                     mv.sudo().write({'date': d})
@@ -330,10 +371,11 @@ class HiboutikApi(models.AbstractModel):
                         session.currency_id, sld.get('quantity'))
                     if tax_ids
                     else
-                    {'total_excluded': float(sld.get('product_price')) *
-                     float(sld.get('quantity')),
-                     'total_included': float(sld.get('product_price')) *
-                     float(sld.get('quantity')), })
+                    {
+                        'total_excluded': float(sld.get('product_price')) * float(sld.get('quantity')),
+                        'total_included': float(sld.get('product_price')) * float(sld.get('quantity')),
+                    }
+                )
 
                 lines_vals = {
                     'hiboutik_order_line_id': sld.get('line_item_id'),
