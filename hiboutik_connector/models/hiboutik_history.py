@@ -15,3 +15,7 @@ class HiboutikHistory(models.Model):
     hiboutik_sync_date = fields.Datetime(
         string='Date', readonly=True, index=True, default=fields.Datetime.now)
     hiboutik_sync_model = fields.Char("Model Sync", help="Model Sync")
+    state = fields.Selection([('succes', 'Succes'), ('error', 'Error')
+                              ], string='state')
+    hiboutik_id = fields.Integer(string='Hiboutik model Id')
+    hiboutik_message = fields.Char("Message", help="Message")

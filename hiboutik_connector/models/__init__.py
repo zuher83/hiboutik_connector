@@ -6,3 +6,4 @@ from . import pos
 from . import account
 from . import hiboutik_api
 from . import product
+from . import hiboutik_history

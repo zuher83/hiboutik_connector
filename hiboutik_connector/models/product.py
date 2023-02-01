@@ -28,19 +28,20 @@ class ProductTemplate(models.Model):
     def write(self, vals):
         res = super().write(vals)
 
-        if vals.get('property_account_income_id') or vals.get(
-                'property_account_expense_id'):
-            base_url = '/product/%s' % self.hiboutik_product_id
-            oo_account_get = self.env['account.account'].browse(
-                vals.get('property_account_income_id')).code
+        for p in self:
+            if vals.get('property_account_income_id') or vals.get(
+                    'property_account_expense_id'):
+                base_url = '/product/%s' % p.hiboutik_product_id
+                oo_account_get = self.env['account.account'].browse(
+                    vals.get('property_account_income_id')).code
 
-            accounting_account = {
-                'product_attribute': 'accounting_account',
-                'new_value': oo_account_get}
+                accounting_account = {
+                    'product_attribute': 'accounting_account',
+                    'new_value': oo_account_get}
 
-            # self.env['hiboutik.api'].hb_api(
-            #     url=base_url, method='PUT', data=accounting_account)
-            _logger.warning('Condition ok %s', vals)
+                self.env['hiboutik.api'].hb_api(
+                    url=base_url, method='PUT', data=accounting_account)
+                _logger.warning('Condition ok %s', vals)
 
         return res
 
@@ -51,3 +52,23 @@ class ProductCategory(models.Model):
     hiboutik_id = fields.Integer(string='Hiboutik Category Id')
     hiboutik_parent_id = fields.Integer(string='Hiboutik Parent Category Id')
     hiboutik_sync = fields.Boolean(string='Hiboutik Sync')
+
+    def write(self, vals):
+        res = super().write(vals)
+
+        for p in self:
+            if vals.get('property_account_income_categ_id'):
+                base_url = '/categories'
+                oo_account_get = self.env['account.account'].browse(
+                    vals.get('property_account_income_categ_id')).code
+
+                accounting_account = {
+                    'category_id': p.hiboutik_id,
+                    'category_attribute': 'accounting_account',
+                    'new_value': oo_account_get}
+
+                self.env['hiboutik.api'].hb_api(
+                    url=base_url, method='PUT', data=accounting_account)
+                _logger.warning('Condition ok %s', vals)
+
+        return res
