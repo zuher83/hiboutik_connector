@@ -26,6 +26,18 @@ class ResCompany(models.Model):
     hiboutik_start_sync = fields.Date(string='Start Sync Since')
     hiboutik_latest_sync = fields.Datetime(string='Latest Sync Datas')
     hiboutik_latest_sync_sales = fields.Datetime(string='Latest Sync Sales')
+    hiboutik_payment_profit_account_id = fields.Many2one(
+        comodel_name='account.account', check_company=True,
+        help="Used to register a profit when the ending balance of a cash register differs from what the system computes",
+        string='Profit Account',
+        domain="[('deprecated', '=', False), ('company_id', '=', id), \
+                ('account_type', 'in', ('income', 'income_other'))]")
+    hiboutik_payment_loss_account_id = fields.Many2one(
+        comodel_name='account.account', check_company=True,
+        help="Used to register a loss when the ending balance of a cash register differs from what the system computes",
+        string='Loss Account',
+        domain="[('deprecated', '=', False), ('company_id', '=', id), \
+                ('account_type', '=', 'expense')]")
 
     def sychronize_datas(self):
         response = self.env['hiboutik.api'].sychronize_datas()

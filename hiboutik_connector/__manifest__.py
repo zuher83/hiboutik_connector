@@ -7,7 +7,7 @@
     'author': "Zuher ELMAS",
     'category': 'Z Modules Account',
     'version': '0.1',
-    'depends': ['base', 'point_of_sale', 'partner_firstname'],
+    'depends': ['base', 'point_of_sale', 'pos_discount', 'partner_firstname'],
     'installable': True,
     'data': [
         # 'security/ir.model.access.csv',
