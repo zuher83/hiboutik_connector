@@ -263,13 +263,10 @@ class HiboutikApi(models.AbstractModel):
     def get_closed_sales(self, config):
         start_date = ('%s') % self.env.company.hiboutik_start_sync
         dates = pandas.date_range(
-            start='2021-11-05', end='2021-11-05', freq='D', tz='Europe/Paris')
+            start='2021-10-09', end='2021-10-09', freq='D', tz='Europe/Paris')
 
         for d in dates:
             base_url = ('/closed_sales/1/%s') % d.strftime("%Y/%m/%d")
-            # base_url = ('/z/customers/1/%s') % d.strftime("%Y/%m/%d")
-            # start_day = datetime.combine(d, time.min)
-            # end_day = datetime.combine(d, time.max)
 
             start_day = pytz.timezone(self.env.user.tz).localize(
                 datetime.combine(d, time(0, 0, 0))).astimezone(
@@ -292,13 +289,13 @@ class HiboutikApi(models.AbstractModel):
                 config.open_ui()
                 session = config.current_session_id
                 session.write(session_vals)
-                session.set_cashbox_pos(cashbox_value=0, notes=None)
+                session.set_cashbox_pos(0, None)
 
                 for s in get_sales_ids:
                     sale_exist = self.env['pos.order'].search(
                         [('hiboutik_order_id', '=', s.get('sale_id'))], limit=1)
+                    _logger.warning('%s' % s.get('sale_id'))
                     if not sale_exist:
-                        # hb_sales_ids.append(s.get('sale_id'))
                         customer = False
                         if s.get('customer_id') != 0:
                             customer = self.customer_check(
@@ -307,9 +304,34 @@ class HiboutikApi(models.AbstractModel):
                         self.get_closed_sale_details(
                             sale_id=s.get('sale_id'),
                             session=session, customer=customer)
-                # session.write({'cash_register_difference': 0})
-                session.sudo().action_pos_session_validate()
-                # session.action_pos_session_closing_control(balancing_account=False, amount_to_balance=session.cash_register_balance_end, bank_payment_method_diffs=None)
+                cash_payment_method = session.payment_method_ids.filtered('is_cash_count')[
+                    :1]
+                total_cash_payment = sum(session.mapped('order_ids.payment_ids').filtered(
+                    lambda payment: payment.payment_method_id.id == cash_payment_method.id).mapped('amount'))
+                session.post_closing_cash_details(total_cash_payment)
+                session.write(
+                    {'cash_register_balance_end': 0, 'stop_at': end_day})
+                # session.sudo().action_pos_session_validate()
+                # session.close_session_from_ui()
+                orders = session.order_ids.filtered(
+                    lambda o: o.state == 'paid' or o.state == 'invoiced')
+                total_sales_amount = sum(orders.mapped(
+                    'amount_total'))
+                total_sales_payment_amount = sum(orders.payment_ids.mapped(
+                    'amount'))
+
+                amount_to_balance = 0
+                balancing_account = False
+
+                if total_sales_amount > total_sales_payment_amount:
+                    amount_to_balance = total_sales_amount - total_sales_payment_amount
+                    balancing_account = session.company_id.hiboutik_payment_loss_account_id
+                if total_sales_amount < total_sales_payment_amount:
+                    amount_to_balance = total_sales_payment_amount - total_sales_amount
+                    balancing_account = session.company_id.hiboutik_payment_profit_account_id
+
+                session.with_context(stop_at=end_day).action_pos_session_closing_control(
+                    balancing_account=balancing_account, amount_to_balance=amount_to_balance, bank_payment_method_diffs=None)
 
                 # all_related_moves = session._get_related_account_moves()
                 # for mv in all_related_moves:
@@ -352,60 +374,8 @@ class HiboutikApi(models.AbstractModel):
             if customer != 0:
                 vals['partner_id'] = customer
 
-            # Get sale lines vals
-            sale_lines = []
-            for sld in sale_details.get('line_items'):
-                if sld.get('product_id') == 0:
-                    product_id = session.config_id.discount_product_id
-                    if sld.get('tax_value') == 20:
-                        tax_get = self.env['account.tax'].search(
-                            [('hiboutik_tax_id', '=', 1)])
-                    if sld.get('tax_value') == 10:
-                        tax_get = self.env['account.tax'].search(
-                            [('hiboutik_tax_id', '=', 2)])
-                    if sld.get('tax_value') == 5.5:
-                        tax_get = self.env['account.tax'].search(
-                            [('hiboutik_tax_id', '=', 3)])
-                    if sld.get('tax_value') == 2.1:
-                        tax_get = self.env['account.tax'].search(
-                            [('hiboutik_tax_id', '=', 4)])
-                    if sld.get('tax_value') == 0:
-                        tax_get = self.env['account.tax'].search(
-                            [('hiboutik_tax_id', '=', 5)])
-                else:
-                    product_id = self.env['product.template'].search(
-                        [('hiboutik_product_id', '=', sld.get('product_id')), '|', ('active', '=', True), ('active', '=', False)], limit=1)
-                    tax_get = product_id.taxes_id
-
-                default_fiscal_position = self.env['pos.config'].browse(
-                    1).default_fiscal_position_id
-
-                fiscal_position = self.env['res.partner'].browse(
-                    customer).property_account_position_id if customer != 0 else default_fiscal_position
-                tax_ids = fiscal_position.map_tax(tax_get)
-                tax_values = (
-                    tax_ids.compute_all(
-                        float(sld.get('product_price')),
-                        session.currency_id, sld.get('quantity'))
-                    if tax_ids
-                    else
-                    {
-                        'total_excluded': float(sld.get('product_price')) * float(sld.get('quantity')),
-                        'total_included': float(sld.get('product_price')) * float(sld.get('quantity')),
-                    }
-                )
-
-                lines_vals = {
-                    'hiboutik_order_line_id': sld.get('line_item_id'),
-                    'product_id': product_id.id,
-                    'full_product_name': product_id.name,
-                    'price_unit': sld.get('product_price'),
-                    'price_subtotal': tax_values['total_excluded'],
-                    'price_subtotal_incl': tax_values['total_included'],
-                    'qty': sld.get('quantity'),
-                    'tax_ids': [(6, 0, tax_get.ids)],
-                }
-                sale_lines.append((0, 0, lines_vals))
+            sale_lines = self.closed_sales_lines_data(
+                sale_details.get('line_items'), session, customer)
 
             payments = []
             amount_paid = 0
@@ -431,24 +401,24 @@ class HiboutikApi(models.AbstractModel):
                     'amount': sale_details.get('total'),
                     'payment_date': closed_date_obj
                 }
-                amount_paid = sale_details.get('total')
+                amount_paid += float(sale_details.get('total'))
                 payments.append((0, 0, payment_vals))
 
-            if sale_details.get('balance'):
-                product_id = session.config_id.tip_product_id
+            # if sale_details.get('balance'):
+            #     product_id = session.config_id.tip_product_id
 
-                difference_amount = float(sale_details.get('balance'))
+            #     difference_amount = float(sale_details.get('balance'))
 
-                payment = self.env['pos.payment.method'].search(
-                    [('hiboutik_equivalent', '=', 'ESP')], limit=1)
-                payment_vals = {
-                    # 'hiboutik_payment_detail_id': pay.get('payment'),
-                    'payment_method_id': payment.id,
-                    'amount': difference_amount,
-                    'payment_date': closed_date_obj
-                }
-                amount_paid += difference_amount
-                payments.append((0, 0, payment_vals))
+            #     payment = self.env['pos.payment.method'].search(
+            #         [('hiboutik_equivalent', '=', 'ESP')], limit=1)
+            #     payment_vals = {
+            #         # 'hiboutik_payment_detail_id': pay.get('payment'),
+            #         'payment_method_id': payment.id,
+            #         'amount': difference_amount,
+            #         'payment_date': closed_date_obj
+            #     }
+            #     amount_paid += difference_amount
+            #     payments.append((0, 0, payment_vals))
 
                 # tip_vals = {
                 #     'product_id': product_id.id,
@@ -465,7 +435,7 @@ class HiboutikApi(models.AbstractModel):
                 # vals['is_tipped'] = True
 
             vals['payment_ids'] = payments
-            vals['amount_tax'] = sale_details.get('sale_total_tax')
+            vals['amount_tax'] = float(sale_details.get('sale_total_tax'))
             vals['amount_total'] = sale_details.get('total')
             vals['amount_paid'] = amount_paid
             vals['amount_return'] = 0
@@ -486,19 +456,19 @@ class HiboutikApi(models.AbstractModel):
             #     amount_paid = sale_details.get('total')
             #     payments.append((0, 0, payment_vals))
 
-                # tip_vals = {
-                #     'product_id': product_id.id,
-                #     'full_product_name': product_id.name,
-                #     'qty': 1,
-                #     'price_unit': difference_amount,
-                #     'price_subtotal': difference_amount,
-                #     'price_subtotal_incl': difference_amount,
-                # }
-                # sale_lines.append((0, 0, tip_vals))
-                # vals['amount_total'] = float(sale_details.get('total')) + difference_amount
+            # tip_vals = {
+            #     'product_id': product_id.id,
+            #     'full_product_name': product_id.name,
+            #     'qty': 1,
+            #     'price_unit': difference_amount,
+            #     'price_subtotal': difference_amount,
+            #     'price_subtotal_incl': difference_amount,
+            # }
+            # sale_lines.append((0, 0, tip_vals))
+            # vals['amount_total'] = float(sale_details.get('total')) + difference_amount
 
-                # vals['tip_amount'] = difference_amount
-                # vals['is_tipped'] = True
+            # vals['tip_amount'] = difference_amount
+            # vals['is_tipped'] = True
 
             vals['lines'] = sale_lines
             # _logger.warning('%s' % vals)
@@ -526,6 +496,63 @@ class HiboutikApi(models.AbstractModel):
                 _logger.warning('%s - %s' % (sale_details.get('sale_id'), e))
                 pass
 
+    def closed_sales_lines_data(self, lines, session, customer):
+        # Get sale lines vals
+        sale_lines = []
+        for sld in lines:
+            if sld.get('product_id') == 0:
+                product_id = session.config_id.discount_product_id
+                if sld.get('tax_value') == 20:
+                    tax_get = self.env['account.tax'].search(
+                        [('hiboutik_tax_id', '=', 1)])
+                if sld.get('tax_value') == 10:
+                    tax_get = self.env['account.tax'].search(
+                        [('hiboutik_tax_id', '=', 2)])
+                if sld.get('tax_value') == 5.5:
+                    tax_get = self.env['account.tax'].search(
+                        [('hiboutik_tax_id', '=', 3)])
+                if sld.get('tax_value') == 2.1:
+                    tax_get = self.env['account.tax'].search(
+                        [('hiboutik_tax_id', '=', 4)])
+                if sld.get('tax_value') == 0:
+                    tax_get = self.env['account.tax'].search(
+                        [('hiboutik_tax_id', '=', 5)])
+            else:
+                product_id = self.env['product.template'].search(
+                    [('hiboutik_product_id', '=', sld.get('product_id')), '|', ('active', '=', True), ('active', '=', False)], limit=1)
+                tax_get = product_id.taxes_id
+
+            default_fiscal_position = self.env['pos.config'].browse(
+                1).default_fiscal_position_id
+
+            fiscal_position = self.env['res.partner'].browse(
+                customer).property_account_position_id if customer != 0 else default_fiscal_position
+            tax_ids = fiscal_position.map_tax(tax_get)
+            tax_values = (
+                tax_ids.compute_all(
+                    float(sld.get('product_price')),
+                    session.currency_id, sld.get('quantity'))
+                if tax_ids
+                else
+                {
+                    'total_excluded': float(sld.get('product_price')) * float(sld.get('quantity')),
+                    'total_included': float(sld.get('product_price')) * float(sld.get('quantity')),
+                }
+            )
+
+            lines_vals = {
+                'hiboutik_order_line_id': sld.get('line_item_id'),
+                'product_id': product_id.id,
+                'full_product_name': product_id.name,
+                'price_unit': sld.get('product_price'),
+                'price_subtotal': tax_values['total_excluded'],
+                'price_subtotal_incl': tax_values['total_included'],
+                'qty': sld.get('quantity'),
+                'tax_ids': [(6, 0, tax_get.ids)],
+            }
+            sale_lines.append((0, 0, lines_vals))
+        return sale_lines
+
     def sychronize_datas(self):
         self.get_category()
         self.get_products()
@@ -533,5 +560,6 @@ class HiboutikApi(models.AbstractModel):
     def sychronize_sales(self):
         pos_config = self.env['pos.config'].search(
             [('hiboutik_store_id', '>', 0), ('hiboutik_sync', '=', True)])
+        # self.sychronize_datas()
         for config in pos_config:
             self.get_closed_sales(config)

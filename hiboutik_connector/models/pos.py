@@ -6,7 +6,7 @@ import logging
 from odoo import fields, models, _
 from odoo.exceptions import AccessError, UserError, ValidationError
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class PosCategory(models.Model):
@@ -97,6 +97,12 @@ class PosSession(models.Model):
     # def _post_statement_difference(self, amount):
     #     return {}
 
+    def action_pos_session_closing_control(self, balancing_account=False, amount_to_balance=0, bank_payment_method_diffs=None):
+        result = super(PosSession, self).action_pos_session_closing_control(balancing_account=balancing_account, amount_to_balance=amount_to_balance, bank_payment_method_diffs=bank_payment_method_diffs)
+        # for session in self:
+        self.write({'stop_at': self._context.get('stop_at')})
+        return result
+
     def _create_account_move(self, balancing_account=False, amount_to_balance=0, bank_payment_method_diffs=None):
         """ Create account.move and account.move.line records for this session.
 
@@ -104,10 +110,11 @@ class PosSession(models.Model):
             - setting self.move_id to the created account.move record
             - reconciling cash receivable lines, invoice receivable lines and stock output lines
         """
+        _logger.warning('Move %s' % self._context)
         account_move = self.env['account.move'].create({
             'journal_id': self.config_id.journal_id.id,
-            'date': self.stop_at,
-            'ref': _(('%s - %s') % (self.name, self.stop_at.date())),
+            'date': self._context.get('stop_at'),
+            'ref': _(('%s - %s') % (self.name, self._context.get('stop_at').date())),
         })
         self.write({'move_id': account_move.id})
 
@@ -136,7 +143,7 @@ class PosSession(models.Model):
             'account_id': accounting_partner.property_account_receivable_id.id,
             'move_id': self.move_id.id,
             'partner_id': accounting_partner.id,
-            'name': '%s - %s %s' % (self.name, self.stop_at.date(), payment.payment_method_id.name),
+            'name': '%s - %s %s' % (self.name, self._context.get('stop_at').date(), payment.payment_method_id.name),
         }
         return self._debit_amounts(partial_vals, amount, amount_converted)
 
@@ -144,6 +151,6 @@ class PosSession(models.Model):
         partial_vals = {
             'account_id': self._get_receivable_account(payment_method).id,
             'move_id': self.move_id.id,
-            'name': '%s - %s %s' % (self.name, self.stop_at.date(), payment_method.name)
+            'name': '%s - %s %s' % (self.name, self._context.get('stop_at').date(), payment_method.name)
         }
         return self._debit_amounts(partial_vals, amount, amount_converted)
