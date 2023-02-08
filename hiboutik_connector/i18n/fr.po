@@ -4,16 +4,32 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-02 20:42+0000\n"
-"PO-Revision-Date: 2022-01-02 20:42+0000\n"
+"POT-Creation-Date: 2023-02-08 18:59+0000\n"
+"PO-Revision-Date: 2023-02-08 20:09+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
+"X-Generator: Poedit 3.2.2\n"
+
+#. module: hiboutik_connector
+#. odoo-python
+#: code:addons/hiboutik_connector/models/pos.py:0
+#, python-format
+msgid "%s - %s %s"
+msgstr ""
+
+#. module: hiboutik_connector
+#. odoo-python
+#: code:addons/hiboutik_connector/models/pos.py:0
+#, python-format
+msgid "%s - %s %s with %s"
+msgstr "%s - %s %s avec %s"
 
 #. module: hiboutik_connector
 #: model:ir.model.fields,field_description:hiboutik_connector.field_res_company__hiboutik_apikey
@@ -32,23 +48,41 @@ msgid "Companies"
 msgstr "Sociétés"
 
 #. module: hiboutik_connector
+#. odoo-python
 #: code:addons/hiboutik_connector/models/hiboutik_api.py:0
 #, python-format
 msgid "Connection Hiboutik API failed: %s"
 msgstr "La connection avec l'Api a échoué: %s"
 
 #. module: hiboutik_connector
-#: model:ir.model.fields,field_description:hiboutik_connector.field_account_tax__display_name
-#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_api__display_name
-#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_category__display_name
-#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_config__display_name
-#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_order__display_name
-#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_order_line__display_name
-#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_payment_method__display_name
-#: model:ir.model.fields,field_description:hiboutik_connector.field_product_template__display_name
-#: model:ir.model.fields,field_description:hiboutik_connector.field_res_company__display_name
+#: model:ir.model,name:hiboutik_connector.model_res_partner
+msgid "Contact"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_history__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_history__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_history__hiboutik_sync_date
+msgid "Date"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_history__display_name
 msgid "Display Name"
-msgstr "Nom affiché"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields.selection,name:hiboutik_connector.selection__hiboutik_history__state__error
+msgid "Error"
+msgstr "Erreur"
 
 #. module: hiboutik_connector
 #: model:ir.model.fields,field_description:hiboutik_connector.field_product_product__hb_font_color
@@ -57,13 +91,9 @@ msgid "Font Color Code"
 msgstr "Couleur de la poilce"
 
 #. module: hiboutik_connector
-#: model_terms:ir.ui.view,arch_db:hiboutik_connector.view_hiboutik_company_form
-msgid "Force Sync"
-msgstr "Forcer la synchronisation"
-
-#. module: hiboutik_connector
 #: model_terms:ir.ui.view,arch_db:hiboutik_connector.product_template_hiboutik_form_view
 #: model_terms:ir.ui.view,arch_db:hiboutik_connector.view_hiboutik_company_form
+#: model_terms:ir.ui.view,arch_db:hiboutik_connector.view_hiboutik_pos_config_form
 #: model_terms:ir.ui.view,arch_db:hiboutik_connector.view_pos_hiboutik_payment_form
 msgid "Hiboutik"
 msgstr ""
@@ -74,12 +104,30 @@ msgid "Hiboutik Api"
 msgstr ""
 
 #. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_category__hiboutik_id
+msgid "Hiboutik Category Id"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_res_partner__hiboutik_customer_id
+#: model:ir.model.fields,field_description:hiboutik_connector.field_res_users__hiboutik_customer_id
+msgid "Hiboutik Customer Id"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_category__hiboutik_parent_id
+msgid "Hiboutik Parent Category Id"
+msgstr ""
+
+#. module: hiboutik_connector
 #: model:ir.model.fields,field_description:hiboutik_connector.field_product_product__hiboutik_product_supplier_reference
 #: model:ir.model.fields,field_description:hiboutik_connector.field_product_template__hiboutik_product_supplier_reference
 msgid "Hiboutik Supplier Ref"
 msgstr ""
 
 #. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_history__hiboutik_sync
+#: model:ir.model.fields,field_description:hiboutik_connector.field_product_category__hiboutik_sync
 #: model:ir.model.fields,field_description:hiboutik_connector.field_product_product__hiboutik_sync
 #: model:ir.model.fields,field_description:hiboutik_connector.field_product_template__hiboutik_sync
 msgid "Hiboutik Sync"
@@ -88,12 +136,17 @@ msgstr ""
 #. module: hiboutik_connector
 #: model:ir.model.fields,field_description:hiboutik_connector.field_res_company__hiboutik_api_url
 msgid "Hiboutik Url"
-msgstr "Hiboutik Url"
+msgstr ""
 
 #. module: hiboutik_connector
 #: model:ir.model.fields,field_description:hiboutik_connector.field_pos_category__hiboutik_id
 msgid "Hiboutik category ID"
 msgstr "Hiboutik ID catégorie"
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_history__hiboutik_id
+msgid "Hiboutik model Id"
+msgstr ""
 
 #. module: hiboutik_connector
 #: model:ir.model.fields,field_description:hiboutik_connector.field_pos_order__hiboutik_order_id
@@ -109,6 +162,11 @@ msgstr "Hiboutik ID de la ligne de vente"
 #: model:ir.model.fields,field_description:hiboutik_connector.field_pos_category__hiboutik_parent_id
 msgid "Hiboutik parent category ID"
 msgstr "Hiboutik catégorie parent"
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_payment__hiboutik_payment_detail_id
+msgid "Hiboutik payment detail Id"
+msgstr ""
 
 #. module: hiboutik_connector
 #: model:ir.model.fields,field_description:hiboutik_connector.field_pos_payment_method__hiboutik_equivalent
@@ -144,15 +202,12 @@ msgid "Hiboutik tax Id"
 msgstr "Hiboutik taxe ID"
 
 #. module: hiboutik_connector
-#: model:ir.model.fields,field_description:hiboutik_connector.field_account_tax__id
-#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_api__id
-#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_category__id
-#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_config__id
-#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_order__id
-#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_order_line__id
-#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_payment_method__id
-#: model:ir.model.fields,field_description:hiboutik_connector.field_product_template__id
-#: model:ir.model.fields,field_description:hiboutik_connector.field_res_company__id
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_config__hiboutik_sync
+msgid "Hiboutik_sync"
+msgstr "Synchroniser avec Hiboutik"
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_history__id
 msgid "ID"
 msgstr ""
 
@@ -177,17 +232,56 @@ msgid "Indiquate your username."
 msgstr "Indiquer votre nom d'utilisateur"
 
 #. module: hiboutik_connector
-#: model:ir.model.fields,field_description:hiboutik_connector.field_account_tax____last_update
-#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_api____last_update
-#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_category____last_update
-#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_config____last_update
-#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_order____last_update
-#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_order_line____last_update
-#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_payment_method____last_update
-#: model:ir.model.fields,field_description:hiboutik_connector.field_product_template____last_update
-#: model:ir.model.fields,field_description:hiboutik_connector.field_res_company____last_update
+#: model_terms:ir.ui.view,arch_db:hiboutik_connector.view_hiboutik_company_form
+msgid "Informations"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model,name:hiboutik_connector.model_account_move
+msgid "Journal Entry"
+msgstr "Pièce comptable"
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_history____last_update
 msgid "Last Modified on"
-msgstr "Dernière modification le"
+msgstr "Dernière Modification Le"
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_history__write_uid
+msgid "Last Updated by"
+msgstr "Derniere Mis A Jour par"
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_history__write_date
+msgid "Last Updated on"
+msgstr "Derniere Mis A Jour"
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_res_company__hiboutik_latest_sync
+msgid "Latest Sync Datas"
+msgstr "Dernière Mis A Jour Des Données"
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_res_company__hiboutik_latest_sync_sales
+msgid "Latest Sync Sales"
+msgstr "Dernière Synchro Des Ventes"
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_res_company__hiboutik_payment_loss_account_id
+msgid "Loss Account"
+msgstr "Compte De Perte"
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_history__hiboutik_message
+#: model:ir.model.fields,help:hiboutik_connector.field_hiboutik_history__hiboutik_message
+msgid "Message"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_history__hiboutik_sync_model
+#: model:ir.model.fields,help:hiboutik_connector.field_hiboutik_history__hiboutik_sync_model
+msgid "Model Sync"
+msgstr ""
 
 #. module: hiboutik_connector
 #: model:ir.model,name:hiboutik_connector.model_pos_category
@@ -215,9 +309,63 @@ msgid "Point of Sale Payment Methods"
 msgstr "Modes de paiement au point de vente"
 
 #. module: hiboutik_connector
+#: model:ir.model,name:hiboutik_connector.model_pos_payment
+msgid "Point of Sale Payments"
+msgstr "Paiements au point de vente"
+
+#. module: hiboutik_connector
+#: model:ir.model,name:hiboutik_connector.model_pos_session
+msgid "Point of Sale Session"
+msgstr "Session du point de vente"
+
+#. module: hiboutik_connector
 #: model:ir.model,name:hiboutik_connector.model_product_template
-msgid "Product Template"
-msgstr "Modèle d'article"
+msgid "Product"
+msgstr "Produit"
+
+#. module: hiboutik_connector
+#: model:ir.model,name:hiboutik_connector.model_product_category
+msgid "Product Category"
+msgstr "Catégorie de produit"
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_res_company__hiboutik_payment_profit_account_id
+msgid "Profit Account"
+msgstr "Compte De Profit"
+
+#. module: hiboutik_connector
+#. odoo-python
+#: code:addons/hiboutik_connector/models/pos.py:0
+#, python-format
+msgid "Refund"
+msgstr "Retour/Avoir"
+
+#. module: hiboutik_connector
+#. odoo-python
+#: code:addons/hiboutik_connector/models/pos.py:0
+#, python-format
+msgid "Sales"
+msgstr "Ventes"
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_res_company__hiboutik_start_sync
+msgid "Start Sync Since"
+msgstr "Commencer à synchro à partir"
+
+#. module: hiboutik_connector
+#: model:ir.model.fields.selection,name:hiboutik_connector.selection__hiboutik_history__state__succes
+msgid "Succes"
+msgstr "Succès "
+
+#. module: hiboutik_connector
+#: model_terms:ir.ui.view,arch_db:hiboutik_connector.view_hiboutik_company_form
+msgid "Sychronize Datas"
+msgstr "Synchroniser La Base"
+
+#. module: hiboutik_connector
+#: model_terms:ir.ui.view,arch_db:hiboutik_connector.view_hiboutik_company_form
+msgid "Sychronize Sales"
+msgstr "Synchroniser Les Ventes"
 
 #. module: hiboutik_connector
 #: model:ir.model.fields,field_description:hiboutik_connector.field_pos_category__hiboutik_sync
@@ -238,6 +386,37 @@ msgid "Use Hex Code only Ex:-#FFFFFF"
 msgstr "Utiliser un code Hexadécimal uniquement Exemple:#FFFFFF"
 
 #. module: hiboutik_connector
+#: model:ir.model.fields,help:hiboutik_connector.field_res_company__hiboutik_payment_loss_account_id
+msgid ""
+"Used to register a loss when the ending balance of a cash register differs "
+"from what the system computes"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,help:hiboutik_connector.field_res_company__hiboutik_payment_profit_account_id
+msgid ""
+"Used to register a profit when the ending balance of a cash register "
+"differs from what the system computes"
+msgstr ""
+
+#. module: hiboutik_connector
 #: model:ir.model.fields,field_description:hiboutik_connector.field_res_company__hiboutik_username
 msgid "Username Api"
 msgstr "Nom d'utilisateur API"
+
+#. module: hiboutik_connector
+#: model:ir.model,name:hiboutik_connector.model_hiboutik_history
+msgid "hiboutik.history"
+msgstr ""
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_history__state
+msgid "state"
+msgstr "status"
+
+#. module: hiboutik_connector
+#. odoo-python
+#: code:addons/hiboutik_connector/models/pos.py:0
+#, python-format
+msgid "untaxed"
+msgstr "exonéré de TVA"
