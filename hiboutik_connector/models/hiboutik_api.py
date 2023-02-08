@@ -263,7 +263,7 @@ class HiboutikApi(models.AbstractModel):
     def get_closed_sales(self, config):
         start_date = ('%s') % self.env.company.hiboutik_start_sync
         dates = pandas.date_range(
-            start='2021-10-09', end='2021-10-09', freq='D', tz='Europe/Paris')
+            start='2021-12-03', end='2021-12-04', freq='D', tz='Europe/Paris')
 
         for d in dates:
             base_url = ('/closed_sales/1/%s') % d.strftime("%Y/%m/%d")
@@ -282,7 +282,7 @@ class HiboutikApi(models.AbstractModel):
                     'start_at': start_day,
                     'stop_at': end_day,
                     # 'state': 'opened',
-                    # 'config_id': config.id
+                    'cash_register_balance_start': 0.0
                 }
 
                 # session = self.env['pos.session'].sudo().create(session_vals)
@@ -304,32 +304,33 @@ class HiboutikApi(models.AbstractModel):
                         self.get_closed_sale_details(
                             sale_id=s.get('sale_id'),
                             session=session, customer=customer)
+
                 cash_payment_method = session.payment_method_ids.filtered('is_cash_count')[
                     :1]
                 total_cash_payment = sum(session.mapped('order_ids.payment_ids').filtered(
                     lambda payment: payment.payment_method_id.id == cash_payment_method.id).mapped('amount'))
                 session.post_closing_cash_details(total_cash_payment)
-                session.write(
-                    {'cash_register_balance_end': 0, 'stop_at': end_day})
+
+                session.write({'stop_at': end_day})
                 # session.sudo().action_pos_session_validate()
                 # session.close_session_from_ui()
                 orders = session.order_ids.filtered(
                     lambda o: o.state == 'paid' or o.state == 'invoiced')
-                total_sales_amount = sum(orders.mapped(
-                    'amount_total'))
-                total_sales_payment_amount = sum(orders.payment_ids.mapped(
-                    'amount'))
+                total_sales_amount = sum(orders.mapped('amount_total'))
+                total_sales_payment_amount = sum(
+                    orders.payment_ids.mapped('amount'))
 
                 amount_to_balance = 0
                 balancing_account = False
 
                 if total_sales_amount > total_sales_payment_amount:
-                    amount_to_balance = total_sales_amount - total_sales_payment_amount
+                    amount_to_balance -= total_sales_amount - total_sales_payment_amount
                     balancing_account = session.company_id.hiboutik_payment_loss_account_id
                 if total_sales_amount < total_sales_payment_amount:
-                    amount_to_balance = total_sales_payment_amount - total_sales_amount
+                    amount_to_balance += total_sales_payment_amount - total_sales_amount
                     balancing_account = session.company_id.hiboutik_payment_profit_account_id
 
+                _logger.warning('%s - %s' % (amount_to_balance, balancing_account))
                 session.with_context(stop_at=end_day).action_pos_session_closing_control(
                     balancing_account=balancing_account, amount_to_balance=amount_to_balance, bank_payment_method_diffs=None)
 
@@ -378,7 +379,7 @@ class HiboutikApi(models.AbstractModel):
                 sale_details.get('line_items'), session, customer)
 
             payments = []
-            amount_paid = 0
+            amount_paid = 0.0
             if sale_details.get('payment_details'):
                 for pay in sale_details.get('payment_details'):
                     payment = self.env['pos.payment.method'].search(
@@ -387,8 +388,7 @@ class HiboutikApi(models.AbstractModel):
                         'hiboutik_payment_detail_id': pay.get(
                             'payment_detail_id'),
                         'payment_method_id': payment.id,
-                        'amount': float(pay.get(
-                            'payment_amount')),
+                        'amount': float(pay.get('payment_amount')),
                         'payment_date': closed_date_obj}
                     amount_paid += float(pay.get('payment_amount'))
                     payments.append((0, 0, payment_vals))
@@ -436,9 +436,9 @@ class HiboutikApi(models.AbstractModel):
 
             vals['payment_ids'] = payments
             vals['amount_tax'] = float(sale_details.get('sale_total_tax'))
-            vals['amount_total'] = sale_details.get('total')
+            vals['amount_total'] = float(sale_details.get('total'))
             vals['amount_paid'] = amount_paid
-            vals['amount_return'] = 0
+            vals['amount_return'] = 0.0
 
             # if sale_details.get('balance'):
             #     product_id = session.config_id.tip_product_id
@@ -544,7 +544,7 @@ class HiboutikApi(models.AbstractModel):
                 'hiboutik_order_line_id': sld.get('line_item_id'),
                 'product_id': product_id.id,
                 'full_product_name': product_id.name,
-                'price_unit': sld.get('product_price'),
+                'price_unit': float(sld.get('product_price')),
                 'price_subtotal': tax_values['total_excluded'],
                 'price_subtotal_incl': tax_values['total_included'],
                 'qty': sld.get('quantity'),
