@@ -263,7 +263,7 @@ class HiboutikApi(models.AbstractModel):
     def get_closed_sales(self, config):
         start_date = ('%s') % self.env.company.hiboutik_start_sync
         dates = pandas.date_range(
-            start='2021-12-03', end='2021-12-04', freq='D', tz='Europe/Paris')
+            start='2021-10-08', end='2021-10-08', freq='D', tz='Europe/Paris')
 
         for d in dates:
             base_url = ('/closed_sales/1/%s') % d.strftime("%Y/%m/%d")
@@ -330,12 +330,13 @@ class HiboutikApi(models.AbstractModel):
                     amount_to_balance += total_sales_payment_amount - total_sales_amount
                     balancing_account = session.company_id.hiboutik_payment_profit_account_id
 
-                _logger.warning('%s - %s' % (amount_to_balance, balancing_account))
-                session.with_context(stop_at=end_day).action_pos_session_closing_control(
+                session.sudo().with_context(stop_at=end_day).action_pos_session_closing_control(
                     balancing_account=balancing_account, amount_to_balance=amount_to_balance, bank_payment_method_diffs=None)
 
-                # all_related_moves = session._get_related_account_moves()
+                # all_related_moves = session.statement_line_ids.mapped('move_id')
                 # for mv in all_related_moves:
+                #     name = ('%s %s' % (session.stop_at.date(), mv.journal_id.name ))
+                #     sql = "UPDATE account_move_line SET name = 'Nouveau nom' WHERE id IN %s"
                 #     mv.button_draft()
                 #     mv.sudo().write({'date': d})
                 #     mv.action_post()
@@ -388,6 +389,7 @@ class HiboutikApi(models.AbstractModel):
                         'hiboutik_payment_detail_id': pay.get(
                             'payment_detail_id'),
                         'payment_method_id': payment.id,
+                        # 'name': '%s - %s - %s' % (closed_date_obj, sale_details.get('unique_sale_id'), payment.name),
                         'amount': float(pay.get('payment_amount')),
                         'payment_date': closed_date_obj}
                     amount_paid += float(pay.get('payment_amount'))
@@ -397,6 +399,7 @@ class HiboutikApi(models.AbstractModel):
                     [('hiboutik_equivalent', '=', sale_details.get('payment'))], limit=1)
                 payment_vals = {
                     # 'hiboutik_payment_detail_id': pay.get('payment'),
+                    # 'name': '%s - %s - %s' % (closed_date_obj, sale_details.get('unique_sale_id'), payment.name),
                     'payment_method_id': payment.id,
                     'amount': sale_details.get('total'),
                     'payment_date': closed_date_obj
