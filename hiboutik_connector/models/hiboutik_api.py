@@ -263,10 +263,10 @@ class HiboutikApi(models.AbstractModel):
     def get_closed_sales(self, config):
         start_date = ('%s') % self.env.company.hiboutik_start_sync
         dates = pandas.date_range(
-            start='2022-12-31', end='2023-01-01', freq='D', tz='Europe/Paris')
+            start='2021-09-28', end='2021-10-31', freq='D', tz='Europe/Paris')
 
         for d in dates:
-            base_url = ('/closed_sales/1/%s') % d.strftime("%Y/%m/%d")
+            base_url = ('/closed_sales/%s/%s') % (config.hiboutik_store_id, d.strftime("%Y/%m/%d"))
 
             start_day = pytz.timezone(self.env.user.tz).localize(
                 datetime.combine(d, time(0, 0, 0))).astimezone(
