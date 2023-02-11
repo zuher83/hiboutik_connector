@@ -56,6 +56,28 @@ class PosPayment(models.Model):
 class PosSession(models.Model):
     _inherit = 'pos.session'
 
+    session_sales_untaxed_total = fields.Monetary(
+        compute='_compute_sales_total',
+        string='Total Untaxed',
+        readonly=True)
+
+    session_sales_taxed_total = fields.Monetary(
+        compute='_compute_sales_total',
+        string='Total Taxed',
+        readonly=True)
+
+    @api.depends('order_ids')
+    def _compute_sales_total(self):
+        for session in self:
+            if session.order_ids:
+                session.session_sales_taxed_total = sum(
+                    session.order_ids.mapped('amount_total'))
+                session.session_sales_untaxed_total = session.session_sales_taxed_total - sum(session.order_ids.mapped(
+                    'amount_tax'))
+            else:
+                session.session_sales_taxed_total = 0.0
+                session.session_sales_untaxed_total = 0.0
+
     @api.depends('payment_method_ids', 'order_ids', 'cash_register_balance_start')
     def _compute_cash_balance(self):
         for session in self:
@@ -72,7 +94,8 @@ class PosSession(models.Model):
                     0.0 if session.state == 'closed' else total_cash_payment
                 )
                 session.cash_register_balance_end = session.cash_register_total_entry_encoding
-                session.cash_register_difference = session.cash_register_balance_end_real - session.cash_register_balance_end
+                session.cash_register_difference = session.cash_register_balance_end_real - \
+                    session.cash_register_balance_end
             else:
                 session.cash_register_total_entry_encoding = 0.0
                 session.cash_register_balance_end = 0.0
