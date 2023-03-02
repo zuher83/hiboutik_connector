@@ -6,10 +6,6 @@ import base64
 import pytz
 
 import pandas
-# import urllib
-# import keyword
-# import time
-# import json
 
 from datetime import datetime, time
 
@@ -22,7 +18,7 @@ import requests
 #     # Python 3
 #     from urllib.parse import urlencode
 
-from odoo import fields, models, tools, api, _
+from odoo import models, tools, _
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -263,10 +259,11 @@ class HiboutikApi(models.AbstractModel):
     def get_closed_sales(self, config):
         start_date = ('%s') % self.env.company.hiboutik_start_sync
         dates = pandas.date_range(
-            start='2021-09-28', end='2021-10-31', freq='D', tz='Europe/Paris')
+            start='2022-12-29', end='2022-12-31', freq='D', tz='Europe/Paris')
 
         for d in dates:
-            base_url = ('/closed_sales/%s/%s') % (config.hiboutik_store_id, d.strftime("%Y/%m/%d"))
+            base_url = (
+                '/closed_sales/%s/%s') % (config.hiboutik_store_id, d.strftime("%Y/%m/%d"))
 
             start_day = pytz.timezone(self.env.user.tz).localize(
                 datetime.combine(d, time(0, 0, 0))).astimezone(
@@ -330,13 +327,15 @@ class HiboutikApi(models.AbstractModel):
 
                 all_related_moves = session.bank_payment_ids.mapped('move_id')
                 for mv in all_related_moves:
-                    name = ('%s - %s %s' % (session.stop_at.strftime("%d/%m/%Y"), session.name, mv.journal_id.name ))
+                    name = ('%s - %s %s' % (session.stop_at.strftime("%d/%m/%Y"),
+                            session.name, mv.journal_id.name))
                     sql = "UPDATE account_move_line SET name = %s WHERE id = ANY(%s)"
                     self._cr.execute(sql, (name, mv.line_ids.ids,))
 
                 cash_moves = session.statement_line_ids.mapped('move_id')
                 if cash_moves:
-                    name = _('Combine Cash POS payments from %s - %s') % (end_day.strftime("%d/%m/%Y"), session.name),
+                    name = _('Combine Cash POS payments from %s - %s') % (
+                        end_day.strftime("%d/%m/%Y"), session.name),
                     sql = "UPDATE account_move SET ref = %s WHERE id = ANY(%s)"
                     self._cr.execute(sql, (name, cash_moves.ids,))
 
@@ -395,6 +394,15 @@ class HiboutikApi(models.AbstractModel):
             else:
                 payment = self.env['pos.payment.method'].search(
                     [('hiboutik_equivalent', '=', sale_details.get('payment'))], limit=1)
+
+                # if not payment and sale_details.get('balance'):
+                #     payment = self.env['pos.payment.method'].search(
+                #         [('hiboutik_equivalent', '=', 'ESP')], limit=1)
+
+                # if not payment and customer and sale_details.get('balance'):
+                #     payment = self.env['pos.payment.method'].search(
+                #         [('hiboutik_equivalent', '=', 'CRED')], limit=1)
+
                 payment_vals = {
                     'name': '%s - %s - %s' % (closed_date_obj.strftime("%d/%m/%Y"), sale_details.get('unique_sale_id'), payment.name),
                     'payment_method_id': payment.id,
