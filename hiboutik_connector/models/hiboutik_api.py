@@ -4,19 +4,10 @@
 import logging
 import base64
 import pytz
-
+import requests
 import pandas
 
 from datetime import datetime, time
-
-import requests
-# from requests import status_codes
-
-# try:
-#     from urllib import urlencode
-# except ImportError:  # pragma: no cover
-#     # Python 3
-#     from urllib.parse import urlencode
 
 from odoo import models, tools, _
 from odoo.exceptions import UserError
@@ -257,9 +248,23 @@ class HiboutikApi(models.AbstractModel):
         return result
 
     def get_closed_sales(self, config):
-        start_date = ('%s') % self.env.company.hiboutik_start_sync
+        latest_hiboutik_order_id = self.env['pos.order'].search(
+            [('hiboutik_order_id', '>', 1)], order='hiboutik_order_id desc', limit=1)
+
+        if latest_hiboutik_order_id:
+            latest_hiboutik_order_id_date = latest_hiboutik_order_id.date_order
+
+            if config.company_id.hiboutik_start_sync:
+                if latest_hiboutik_order_id_date.date() < self.env.company.hiboutik_start_sync.date():
+                    raise UserError(
+                        _("The last order in database is older than the start date of the synchronization. Please change the start date of the synchronization in the company settings."))
+            start_date = latest_hiboutik_order_id_date
+        else:
+            start_date = config.company_id.hiboutik_start_sync
+
+        end_date = datetime.now().strftime("%Y-%m-%d")
         dates = pandas.date_range(
-            start='2022-12-29', end='2022-12-31', freq='D', tz='Europe/Paris')
+            start=start_date, end=end_date, freq='D', tz='Europe/Paris')
 
         for d in dates:
             base_url = (
@@ -380,6 +385,8 @@ class HiboutikApi(models.AbstractModel):
             amount_paid = 0.0
             if sale_details.get('payment_details'):
                 for pay in sale_details.get('payment_details'):
+                    _logger.warning('Payment method %s' %
+                                    pay.get('payment_type'))
                     payment = self.env['pos.payment.method'].search(
                         [('hiboutik_equivalent', '=', pay.get('payment_type'))], limit=1)
                     payment_vals = {
@@ -395,13 +402,13 @@ class HiboutikApi(models.AbstractModel):
                 payment = self.env['pos.payment.method'].search(
                     [('hiboutik_equivalent', '=', sale_details.get('payment'))], limit=1)
 
-                # if not payment and sale_details.get('balance'):
-                #     payment = self.env['pos.payment.method'].search(
-                #         [('hiboutik_equivalent', '=', 'ESP')], limit=1)
+                if not payment and sale_details.get('balance'):
+                    payment = self.env['pos.payment.method'].search(
+                        [('hiboutik_equivalent', '=', 'ESP')], limit=1)
 
-                # if not payment and customer and sale_details.get('balance'):
-                #     payment = self.env['pos.payment.method'].search(
-                #         [('hiboutik_equivalent', '=', 'CRED')], limit=1)
+                if not payment and customer and sale_details.get('balance'):
+                    payment = self.env['pos.payment.method'].search(
+                        [('hiboutik_equivalent', '=', 'CRED')], limit=1)
 
                 payment_vals = {
                     'name': '%s - %s - %s' % (closed_date_obj.strftime("%d/%m/%Y"), sale_details.get('unique_sale_id'), payment.name),
@@ -507,6 +514,6 @@ class HiboutikApi(models.AbstractModel):
     def sychronize_sales(self):
         pos_config = self.env['pos.config'].search(
             [('hiboutik_store_id', '>', 0), ('hiboutik_sync', '=', True)])
-        # self.sychronize_datas()
+        self.sychronize_datas()
         for config in pos_config:
             self.get_closed_sales(config)
