@@ -6,16 +6,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-10 06:33+0000\n"
-"PO-Revision-Date: 2023-02-10 07:35+0100\n"
+"POT-Creation-Date: 2023-08-10 10:29+0000\n"
+"PO-Revision-Date: 2023-08-10 12:34+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: \n"
-"X-Generator: Poedit 3.2.2\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 3.3.2\n"
 
 #. module: hiboutik_connector
 #: model:ir.model.fields,field_description:hiboutik_connector.field_res_company__hiboutik_apikey
@@ -106,24 +106,24 @@ msgstr ""
 #. module: hiboutik_connector
 #: model:ir.model.fields,field_description:hiboutik_connector.field_product_category__hiboutik_id
 msgid "Hiboutik Category Id"
-msgstr ""
+msgstr "Hiboutik Catégorie ID"
 
 #. module: hiboutik_connector
 #: model:ir.model.fields,field_description:hiboutik_connector.field_res_partner__hiboutik_customer_id
 #: model:ir.model.fields,field_description:hiboutik_connector.field_res_users__hiboutik_customer_id
 msgid "Hiboutik Customer Id"
-msgstr ""
+msgstr "Hiboutik Client ID"
 
 #. module: hiboutik_connector
 #: model:ir.model.fields,field_description:hiboutik_connector.field_product_category__hiboutik_parent_id
 msgid "Hiboutik Parent Category Id"
-msgstr ""
+msgstr "Hiboutik Catégorie Parent ID"
 
 #. module: hiboutik_connector
 #: model:ir.model.fields,field_description:hiboutik_connector.field_product_product__hiboutik_product_supplier_reference
 #: model:ir.model.fields,field_description:hiboutik_connector.field_product_template__hiboutik_product_supplier_reference
 msgid "Hiboutik Supplier Ref"
-msgstr ""
+msgstr "Hiboutik Fournisseur ID"
 
 #. module: hiboutik_connector
 #: model:ir.model.fields,field_description:hiboutik_connector.field_hiboutik_history__hiboutik_sync
@@ -166,7 +166,7 @@ msgstr "Hiboutik catégorie parent"
 #. module: hiboutik_connector
 #: model:ir.model.fields,field_description:hiboutik_connector.field_pos_payment__hiboutik_payment_detail_id
 msgid "Hiboutik payment detail Id"
-msgstr ""
+msgstr "Hiboutik Paiement détails ID"
 
 #. module: hiboutik_connector
 #: model:ir.model.fields,field_description:hiboutik_connector.field_pos_payment_method__hiboutik_equivalent
@@ -287,8 +287,22 @@ msgstr ""
 #. odoo-python
 #: code:addons/hiboutik_connector/models/pos.py:0
 #, python-format
+msgid "POS Sales of %s"
+msgstr "Z Ventes Caisse %s "
+
+#. module: hiboutik_connector
+#. odoo-python
+#: code:addons/hiboutik_connector/models/pos.py:0
+#, python-format
 msgid "POS Sales of %s - %s"
 msgstr "Z Ventes Caisse du %s - %s"
+
+#. module: hiboutik_connector
+#. odoo-python
+#: code:addons/hiboutik_connector/models/pos.py:0
+#, python-format
+msgid "POS Session %s"
+msgstr "Caisse Session %s"
 
 #. module: hiboutik_connector
 #: model:ir.model,name:hiboutik_connector.model_pos_category
@@ -298,7 +312,7 @@ msgstr "Catégorie du point de vente"
 #. module: hiboutik_connector
 #: model:ir.model,name:hiboutik_connector.model_pos_config
 msgid "Point of Sale Configuration"
-msgstr "Paramétrage du point de vente"
+msgstr "Configuration du point de vente"
 
 #. module: hiboutik_connector
 #: model:ir.model,name:hiboutik_connector.model_pos_order_line
@@ -313,12 +327,12 @@ msgstr "Commandes du point de vente"
 #. module: hiboutik_connector
 #: model:ir.model,name:hiboutik_connector.model_pos_payment_method
 msgid "Point of Sale Payment Methods"
-msgstr "Modes de paiement au point de vente"
+msgstr "Modes de paiement du point de vente"
 
 #. module: hiboutik_connector
 #: model:ir.model,name:hiboutik_connector.model_pos_payment
 msgid "Point of Sale Payments"
-msgstr "Paiements au point de vente"
+msgstr "Paiements du point de vente"
 
 #. module: hiboutik_connector
 #: model:ir.model,name:hiboutik_connector.model_pos_session
@@ -385,6 +399,31 @@ msgid "Tax"
 msgstr "Taxe"
 
 #. module: hiboutik_connector
+#. odoo-python
+#: code:addons/hiboutik_connector/models/hiboutik_api.py:0
+#, python-format
+msgid ""
+"The last order in database is older than the start date of the "
+"synchronization. Please change the start date of the synchronization in the "
+"company settings."
+msgstr ""
+"La dernière vente dans la base de données est antérieur à la date de début "
+"de la synchronisation. Veuillez modifier la date de début de la "
+"synchronisation dans les paramètres de l’entreprise."
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_session__session_sales_taxed_total
+#: model_terms:ir.ui.view,arch_db:hiboutik_connector.view_pos_hiboutik_session_tree
+msgid "Total Taxed"
+msgstr "Total T.T.C"
+
+#. module: hiboutik_connector
+#: model:ir.model.fields,field_description:hiboutik_connector.field_pos_session__session_sales_untaxed_total
+#: model_terms:ir.ui.view,arch_db:hiboutik_connector.view_pos_hiboutik_session_tree
+msgid "Total Untaxed"
+msgstr "Total H.T"
+
+#. module: hiboutik_connector
 #: model:ir.model.fields,help:hiboutik_connector.field_product_product__hb_bck_color
 #: model:ir.model.fields,help:hiboutik_connector.field_product_product__hb_font_color
 #: model:ir.model.fields,help:hiboutik_connector.field_product_template__hb_bck_color
@@ -398,6 +437,8 @@ msgid ""
 "Used to register a loss when the ending balance of a cash register differs "
 "from what the system computes"
 msgstr ""
+"Utilisé pour enregistrer une perte lorsque le solde final d’une caisse "
+"diffère de ce que le système calcule"
 
 #. module: hiboutik_connector
 #: model:ir.model.fields,help:hiboutik_connector.field_res_company__hiboutik_payment_profit_account_id
@@ -405,6 +446,8 @@ msgid ""
 "Used to register a profit when the ending balance of a cash register "
 "differs from what the system computes"
 msgstr ""
+"Utilisé pour enregistrer un profit lorsque le solde final d’une caisse "
+"diffère de ce que le système calcule"
 
 #. module: hiboutik_connector
 #: model:ir.model.fields,field_description:hiboutik_connector.field_res_company__hiboutik_username
