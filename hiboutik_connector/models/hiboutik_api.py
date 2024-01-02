@@ -263,6 +263,7 @@ class HiboutikApi(models.AbstractModel):
             start_date = config.company_id.hiboutik_start_sync
 
         end_date = datetime.now().strftime("%Y-%m-%d")
+        end_date = '2023-07-23'
         dates = pandas.date_range(
             start=start_date, end=end_date, freq='D', tz='Europe/Paris')
 
@@ -426,6 +427,11 @@ class HiboutikApi(models.AbstractModel):
             vals['amount_return'] = 0.0
 
             vals['lines'] = sale_lines
+
+            if sale_details.get('balance') and sale_details.get('balance') != 0:
+                vals['tip_amount'] = abs(float(sale_details.get('balance')))
+                vals['amount_paid'] = vals.get('amount_paid') - \
+                    abs(float(sale_details.get('balance')))
 
             result = self.env['pos.order'].create(vals)
             result.action_pos_order_paid()
