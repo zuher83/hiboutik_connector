@@ -263,7 +263,6 @@ class HiboutikApi(models.AbstractModel):
             start_date = config.company_id.hiboutik_start_sync
 
         end_date = datetime.now().strftime("%Y-%m-%d")
-        end_date = '2023-07-23'
         dates = pandas.date_range(
             start=start_date, end=end_date, freq='D', tz='Europe/Paris')
 
@@ -294,7 +293,6 @@ class HiboutikApi(models.AbstractModel):
                 for s in get_sales_ids:
                     sale_exist = self.env['pos.order'].search(
                         [('hiboutik_order_id', '=', s.get('sale_id'))], limit=1)
-                    _logger.warning('%s' % s.get('sale_id'))
                     if not sale_exist:
                         customer = False
                         if s.get('customer_id') != 0:
